@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CareerPilot AI | Career Copilot</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="brand">CareerPilot <span>AI</span></div>
+    <span class="nav-label">Career Preparation Copilot</span>
+</header>
+
+<main class="container">
+
+    <section class="hero">
+        <span class="tag">YOUR CAREER, YOUR NEXT STEP</span>
+
+        <h1>
+            Find your skill gaps.<br>
+            <span>Prepare with confidence.</span>
+        </h1>
+
+        <p>
+            Compare your resume with a job description and discover
+            the skills you already have and the ones to develop.
+        </p>
+    </section>
+
+    <section class="upload-card">
+
+        <h2>Analyze your resume</h2>
+
+        <p class="section-description">
+            Upload your resume and paste the target job description.
+        </p>
+
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="form-group">
+
+                <label for="resume">Upload Resume (PDF)</label>
+
+                <input
+                    type="file"
+                    id="resume"
+                    name="resume"
+                    accept=".pdf,application/pdf"
+                    required
+                >
+
+                <small>Maximum file size: 5 MB</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="job_description">Job Description</label>
+
+                <textarea
+                    id="job_description"
+                    name="job_description"
+                    rows="8"
+                    placeholder="Paste the complete job description here..."
+                    required
+                ></textarea>
+
+            </div>
+
+            <button type="submit" class="analyze-button">
+                Analyze My Resume
+            </button>
+
+        </form>
+
+    </section>
+
+    {% if result %}
+
+    <section class="results-section">
+
+        <div class="section-heading">
+
+            <span class="tag">YOUR ANALYSIS</span>
+
+            <h2>Resume Analysis Results</h2>
+
+            <p>
+                Here is how your extracted skills compare with
+                the job requirements.
+            </p>
+
+        </div>
+
+        <div class="summary-card">
+
+            <p class="summary-label">Skill Match Percentage</p>
+
+            <div class="match-percentage">
+                {{ result.match_percentage }}%
+            </div>
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-fill"
+                    style="width: {{ result.match_percentage }}%;"
+                ></div>
+
+            </div>
+
+            <small>
+                Based on matching recognized skills divided by
+                recognized required skills.
+            </small>
+
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat-card matching">
+                <span>Matching Skills</span>
+                <strong>{{ result.matching_skills|length }}</strong>
+            </div>
+
+            <div class="stat-card missing">
+                <span>Missing Skills</span>
+                <strong>{{ result.missing_skills|length }}</strong>
+            </div>
+
+            <div class="stat-card extra">
+                <span>Extra Skills</span>
+                <strong>{{ result.extra_skills|length }}</strong>
+            </div>
+
+        </div>
+
+        <div class="skills-grid">
+
+            <div class="skill-card">
+
+                <h3>Matching Skills</h3>
+
+                {% for skill in result.matching_skills %}
+                    <span class="skill-tag success-tag">
+                        {{ skill }}
+                    </span>
+                {% else %}
+                    <p>No matching skills found.</p>
+                {% endfor %}
+
+            </div>
+
+            <div class="skill-card">
+
+                <h3>Missing Skills</h3>
+
+                {% for skill in result.missing_skills %}
+                    <span class="skill-tag danger-tag">
+                        {{ skill }}
+                    </span>
+                {% else %}
+                    <p>No missing skills found.</p>
+                {% endfor %}
+
+            </div>
+
+            <div class="skill-card">
+
+                <h3>Extra Skills</h3>
+
+                {% for skill in result.extra_skills %}
+                    <span class="skill-tag info-tag">
+                        {{ skill }}
+                    </span>
+                {% else %}
+                    <p>No extra skills found.</p>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="recommendations-section">
+
+            <h2>Learning Recommendations</h2>
+
+            <p class="section-description">
+                Suggested learning paths for your missing skills.
+            </p>
+
+            {% for item in result.recommendations %}
+
+            <div class="recommendation-card">
+
+                <h3>{{ item.skill }}</h3>
+
+                <h4>What to learn</h4>
+                <p>{{ item.learning }}</p>
+
+                <h4>Suggested project</h4>
+                <p>{{ item.project }}</p>
+
+                <h4>Interview questions</h4>
+
+                <ul>
+                    {% for question in item.interview_questions %}
+                        <li>{{ question }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+            {% else %}
+
+                <p>Great! No missing skills to recommend right now.</p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+</main>
+
+<footer>
+
+    <p>CareerPilot AI | Built for smarter career preparation</p>
+
+    <small>
+        Skill matching is an informational comparison,
+        not a hiring prediction.
+    </small>
+
+</footer>
+
+</body>
+</html>
