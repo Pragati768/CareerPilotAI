@@ -137,8 +137,7 @@ CareerPilot.ai/
 
 
 ```bash
-
-git clone YOUR\_GITHUB\_REPOSITORY\_URL
+git clone https://github.com/Pragati768/CareerPilotAI.git
 
 cd CareerPilot.ai
 
